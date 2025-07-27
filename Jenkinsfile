@@ -6,14 +6,14 @@ pipeline {
         PROJECT_DIR = '/home/ubuntu/webapp-frontend'
     }
 
-    stages {
-        stage('Clone Repo') {
-            steps {
-                sh "rm -rf $PROJECT_DIR"
-                sh "git clone $REPO_URL $PROJECT_DIR"
-            }
+    stage('Clone Repo') {
+        steps { 
+            sh 'whoami'
+            sh 'id'
+            sh "rm -rf $PROJECT_DIR"
+            sh "git clone $REPO_URL $PROJECT_DIR"
         }
-        
+    }
         stage('Check Permissions') {
             steps {
                 sh 'ls -ld /home/ubuntu/webapp-frontend'

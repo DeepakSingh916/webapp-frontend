@@ -34,7 +34,7 @@ pipeline {
             steps {
                 dir("$PROJECT_DIR") {
                     sh "fuser -k 3000/tcp || true"
-                    sh "nohup serve -s build -l 3000 > serve.log 2>&1 &"
+                    sh "nohup serve -s build -l tcp://0.0.0.0:3000 > serve.log 2>&1 &"
                 }
             }
         }

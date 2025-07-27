@@ -37,8 +37,11 @@ pipeline {
 
         stage('Serve Locally') {
             steps {
-                echo 'Starting React app on localhost:3000...'
-                bat 'start "" cmd /c "npx serve -s build -l 3000 > serve.log 2>&1"'
+                echo 'Starting React app in background...'
+                powershell '''
+                $serve = Start-Process "npx" -ArgumentList "serve -s build -l 3000" -NoNewWindow -PassThru
+                Write-Output "Serve started with PID: $($serve.Id)"
+                '''
             }
         }
     }

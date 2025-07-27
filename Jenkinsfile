@@ -20,8 +20,8 @@ pipeline {
             steps {
                 dir("$PROJECT_DIR") {
                     sh '''
-                    set -x
-                    npm install || (echo "npm install failed with exit code $?" && exit 1)
+                    sudo set -x
+                    sudo npm install || (echo "npm install failed with exit code $?" && exit 1)
                     '''
                 }
             }

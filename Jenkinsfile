@@ -36,10 +36,8 @@ pipeline {
         stage('Serve Locally') {
             steps {
                 echo 'Starting React app in background...'
-                powershell '''
-                    $command = 'cmd.exe'
-                    $args = '/c start "serve" cmd /c "npx serve -s build -l 3000 > serve.log 2>&1"'
-                    Start-Process -FilePath $command -ArgumentList $args
+                bat '''
+                    start "React Serve" cmd /c "npx serve -s build -l 3000 > serve.log 2>&1"
                 '''
             }
         }
@@ -47,23 +45,22 @@ pipeline {
         stage('Wait for Server') {
             steps {
                 echo 'Waiting for React app to start on port 3000...'
-                // Retry curl max 10 times with 2 sec interval (20 sec max wait)
                 bat '''
-                set RETRIES=10
-                set COUNT=0
-                :retry
-                curl http://localhost:3000 >nul 2>&1
-                if %errorlevel%==0 (
-                    echo Server is up!
-                ) else (
-                    set /a COUNT+=1
-                    if %COUNT% GEQ %RETRIES% (
-                        echo Server failed to start in time.
-                        exit /b 1
+                    set RETRIES=10
+                    set COUNT=0
+                    :retry
+                    curl http://localhost:3000 1>nul 2>&1
+                    if %ERRORLEVEL% == 0 (
+                        echo Server is up!
+                    ) else (
+                        set /a COUNT+=1
+                        if %COUNT% GEQ %RETRIES% (
+                            echo Server failed to start in time.
+                            exit /b 1
+                        )
+                        timeout /T 2 >nul
+                        goto retry
                     )
-                    timeout /T 2 >nul
-                    goto retry
-                )
                 '''
             }
         }

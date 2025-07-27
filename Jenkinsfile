@@ -6,14 +6,16 @@ pipeline {
         PROJECT_DIR = '/home/ubuntu/webapp-frontend'
     }
 
-    stage('Clone Repo') {
-        steps { 
-            sh 'whoami'
-            sh 'id'
-            sh "rm -rf $PROJECT_DIR"
-            sh "git clone $REPO_URL $PROJECT_DIR"
+    stages {
+        stage('Clone Repo') {
+            steps { 
+                sh 'whoami'
+                sh 'id'
+                sh "rm -rf $PROJECT_DIR"
+                sh "git clone $REPO_URL $PROJECT_DIR"
+            }
         }
-    }
+
         stage('Check Permissions') {
             steps {
                 sh 'ls -ld /home/ubuntu/webapp-frontend'
@@ -40,13 +42,8 @@ pipeline {
         stage('Serve App') {
             steps {
                 dir("$PROJECT_DIR") {
-                    // Kill any process on port 3000 before starting
                     sh "fuser -k 3000/tcp || true"
-
-                    // Install serve if missing
                     sh "npm install -g serve || true"
-
-                    // Start serve in background using nohup
                     sh "nohup serve -s build -l 3000 > serve.log 2>&1 &"
                 }
             }

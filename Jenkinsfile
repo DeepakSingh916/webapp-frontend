@@ -8,21 +8,16 @@ pipeline {
 
     stages {
         stage('Clone Repo') {
-            steps { 
-                sh 'whoami'
-                sh 'id'
-                sh "sudo rm -rf $PROJECT_DIR"
-                sh "sudo git clone $REPO_URL $PROJECT_DIR"
+            steps {
+                sh "rm -rf $PROJECT_DIR"
+                sh "git clone $REPO_URL $PROJECT_DIR"
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh '''
-                    sudo set -x
-                    sudo npm install || (echo "npm install failed with exit code $?" && exit 1)
-                    '''
+                    sh 'npm install'
                 }
             }
         }
@@ -39,7 +34,6 @@ pipeline {
             steps {
                 dir("$PROJECT_DIR") {
                     sh "fuser -k 3000/tcp || true"
-                    sh "npm install -g serve || true"
                     sh "nohup serve -s build -l 3000 > serve.log 2>&1 &"
                 }
             }
@@ -48,10 +42,10 @@ pipeline {
 
     post {
         success {
-            echo 'Frontend deployed successfully!'
+            echo '✅ Frontend deployed successfully!'
         }
         failure {
-            echo 'Deployment failed.'
+            echo '❌ Deployment failed.'
         }
     }
 }

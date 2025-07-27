@@ -1,75 +1,57 @@
 pipeline {
     agent any
 
+    environment {
+        REPO_URL = 'https://github.com/DeepakSingh916/webapp-frontend.git'
+        PROJECT_DIR = '/home/ubuntu/webapp-frontend'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Clone Repo') {
             steps {
-                git branch: 'master', url: 'https://github.com/DeepakSingh916/webapp-frontend'
+                sh "rm -rf $PROJECT_DIR"
+                sh "git clone $REPO_URL $PROJECT_DIR"
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                dir("$PROJECT_DIR") {
+                    sh 'npm install'
+                }
             }
         }
 
-        stage('Run Tests') {
+        stage('Build App') {
             steps {
-                bat 'npm test -- --watchAll=false --passWithNoTests'
+                dir("$PROJECT_DIR") {
+                    sh 'npm run build'
+                }
             }
         }
 
-        stage('Build') {
+        stage('Serve App') {
             steps {
-                bat 'npm run build'
+                dir("$PROJECT_DIR") {
+                    // Kill any process on port 3000 before starting
+                    sh "fuser -k 3000/tcp || true"
+
+                    // Install serve if missing
+                    sh "npm install -g serve || true"
+
+                    // Start serve in background using nohup
+                    sh "nohup serve -s build -l 3000 > serve.log 2>&1 &"
+                }
             }
         }
+    }
 
-        stage('Cleanup Previous Serve') {
-            steps {
-                echo 'Killing previous serve processes if any...'
-                bat 'taskkill /F /IM node.exe || exit /b 0'
-            }
+    post {
+        success {
+            echo 'Frontend deployed successfully!'
         }
-
-        stage('Serve Locally') {
-            steps {
-                echo 'Starting React app in background...'
-                bat '''
-                    start "React Serve" cmd /c "npx serve -s build -l 3000 > serve.log 2>&1"
-                '''
-            }
-        }
-
-        stage('Wait for Server') {
-            steps {
-                echo 'Waiting for React app to start on port 3000...'
-                bat '''
-                    set RETRIES=10
-                    set COUNT=0
-                    :retry
-                    curl http://localhost:3000 1>nul 2>&1
-                    if %ERRORLEVEL% == 0 (
-                        echo Server is up!
-                    ) else (
-                        set /a COUNT+=1
-                        if %COUNT% GEQ %RETRIES% (
-                            echo Server failed to start in time.
-                            exit /b 1
-                        )
-                        timeout /T 2 >nul
-                        goto retry
-                    )
-                '''
-            }
-        }
-
-        stage('Dump Serve Log') {
-            steps {
-                echo 'Printing serve.log (optional)...'
-                bat 'type serve.log'
-            }
+        failure {
+            echo 'Deployment failed.'
         }
     }
 }

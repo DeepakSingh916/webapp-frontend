@@ -12,14 +12,7 @@ pipeline {
                 sh 'whoami'
                 sh 'id'
                 sh "sudo rm -rf $PROJECT_DIR"
-                sh "git clone $REPO_URL $PROJECT_DIR"
-            }
-        }
-
-        stage('Check Permissions') {
-            steps {
-                sh 'ls -ld /home/ubuntu/webapp-frontend'
-                sh 'whoami'
+                sh "sudo git clone $REPO_URL $PROJECT_DIR"
             }
         }
 

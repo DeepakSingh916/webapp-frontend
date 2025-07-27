@@ -19,7 +19,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh 'sudo npm install'
+                    sh '''
+                    npm install || (echo "npm install failed with exit code $?" && exit 1)
+                    '''
                 }
             }
         }

@@ -11,8 +11,8 @@ pipeline {
             steps { 
                 sh 'whoami'
                 sh 'id'
-                sh "rm -rf $PROJECT_DIR"
-                sh "git clone $REPO_URL $PROJECT_DIR"
+                sh "sudo rm -rf $PROJECT_DIR"
+                sh "sudo git clone $REPO_URL $PROJECT_DIR"
             }
         }
 

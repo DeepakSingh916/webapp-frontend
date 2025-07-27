@@ -13,6 +13,13 @@ pipeline {
                 sh "git clone $REPO_URL $PROJECT_DIR"
             }
         }
+        
+        stage('Check Permissions') {
+            steps {
+                sh 'ls -ld /home/ubuntu/webapp-frontend'
+                sh 'whoami'
+            }
+        }
 
         stage('Install Dependencies') {
             steps {

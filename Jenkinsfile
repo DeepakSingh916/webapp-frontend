@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
+        PROJECT_DIR = "${env.WORKSPACE}/webapp-frontend"
         REPO_URL = 'https://github.com/DeepakSingh916/webapp-frontend.git'
-        PROJECT_DIR = '/home/ubuntu/webapp-frontend'
     }
 
     stages {

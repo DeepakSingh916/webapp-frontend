@@ -29,8 +29,6 @@ pipeline {
         stage('Cleanup Previous Serve') {
             steps {
                 echo 'Killing previous serve processes if any...'
-                // Kill all node processes (serve runs under node)
-                // Ignore error if no such process
                 bat 'taskkill /F /IM node.exe || exit /b 0'
             }
         }
@@ -39,9 +37,17 @@ pipeline {
             steps {
                 echo 'Starting React app in background...'
                 powershell '''
-                $serve = Start-Process "npx" -ArgumentList "serve -s build -l 3000" -NoNewWindow -PassThru
-                Write-Output "Serve started with PID: $($serve.Id)"
+                    $command = 'cmd.exe'
+                    $args = '/c start "serve" cmd /c "npx serve -s build -l 3000 > serve.log 2>&1"'
+                    Start-Process -FilePath $command -ArgumentList $args
                 '''
+            }
+        }
+
+        stage('Check Serve') {
+            steps {
+                echo 'Checking if React app is running...'
+                bat 'curl http://localhost:3000 || exit /b 1'
             }
         }
     }

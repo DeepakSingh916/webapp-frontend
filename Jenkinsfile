@@ -11,8 +11,8 @@ pipeline {
             steps { 
                 sh 'whoami'
                 sh 'id'
-                sh "sudo rm -rf $PROJECT_DIR"
-                sh "sudo git clone $REPO_URL $PROJECT_DIR"
+                sh "rm -rf $PROJECT_DIR"
+                sh "git clone $REPO_URL $PROJECT_DIR"
             }
         }
 
@@ -30,7 +30,7 @@ pipeline {
         stage('Build App') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh 'sudo npm run build'
+                    sh 'npm run build'
                 }
             }
         }
@@ -38,9 +38,9 @@ pipeline {
         stage('Serve App') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh "sudo fuser -k 3000/tcp || true"
-                    sh "sudo npm install -g serve || true"
-                    sh "sudo nohup serve -s build -l 3000 > serve.log 2>&1 &"
+                    sh "fuser -k 3000/tcp || true"
+                    sh "npm install -g serve || true"
+                    sh "nohup serve -s build -l 3000 > serve.log 2>&1 &"
                 }
             }
         }

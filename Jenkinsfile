@@ -19,7 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh 'npm install'
+                    sh 'sudo npm install'
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
         stage('Build App') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh 'npm run build'
+                    sh 'sudo npm run build'
                 }
             }
         }
@@ -35,9 +35,9 @@ pipeline {
         stage('Serve App') {
             steps {
                 dir("$PROJECT_DIR") {
-                    sh "fuser -k 3000/tcp || true"
-                    sh "npm install -g serve || true"
-                    sh "nohup serve -s build -l 3000 > serve.log 2>&1 &"
+                    sh "sudo fuser -k 3000/tcp || true"
+                    sh "sudo npm install -g serve || true"
+                    sh "sudo nohup serve -s build -l 3000 > serve.log 2>&1 &"
                 }
             }
         }

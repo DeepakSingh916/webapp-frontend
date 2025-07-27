@@ -25,5 +25,21 @@ pipeline {
                 bat 'npm run build'
             }
         }
+
+        stage('Cleanup Previous Serve') {
+            steps {
+                echo 'Killing previous serve processes if any...'
+                // Kill all node processes (serve runs under node)
+                // Ignore error if no such process
+                bat 'taskkill /F /IM node.exe || exit /b 0'
+            }
+        }
+
+        stage('Serve Locally') {
+            steps {
+                echo 'Starting React app on localhost:3000...'
+                bat 'start /b npx serve -s build -l 3000'
+            }
+        }
     }
 }

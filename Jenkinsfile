@@ -14,6 +14,12 @@ pipeline {
             }
         }
 
+        stage('Set Permissions') {
+            steps {
+                sh 'chmod -R 777 $WORKSPACE'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 dir("$PROJECT_DIR") {
